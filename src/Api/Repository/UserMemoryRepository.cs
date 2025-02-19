@@ -1,10 +1,9 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using PersonalFinanceApp.Interfaces;
+﻿using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
 
 namespace PersonalFinanceApp.Repository
 {
-    public class UserRepository : IUserRepository
+    public class UserMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();
         private int userId = 1;
@@ -17,7 +16,8 @@ namespace PersonalFinanceApp.Repository
         {
             return _users.FirstOrDefault(u => u.Id == id);
         }
-        public void CreateUser(UserDto userDto)
+
+        public User CreateUser(UserDto userDto)
         {
             var user = new User
             {
@@ -29,24 +29,30 @@ namespace PersonalFinanceApp.Repository
             };
 
             _users.Add(user);
+            return user;
         }
-        public void UpdateUser(int id, UserDto userDto) 
+
+        public void UpdateUser(int id, UserDto userDto)
         {
             var userToUpdate = _users.FirstOrDefault(u => u.Id == id);
 
-            if (userToUpdate != null)
+            if (userToUpdate == null)
             {
-                userToUpdate.FirstName = userDto.FirstName;
-                userToUpdate.LastName = userDto.LastName;  
-                userToUpdate.Email = userDto.Email;
-                userToUpdate.Phone = userDto.Phone;
+                throw new KeyNotFoundException("User not found");
             }
 
+            userToUpdate.FirstName = userDto.FirstName;
+            userToUpdate.LastName = userDto.LastName;
+            userToUpdate.Email = userDto.Email;
+            userToUpdate.Phone = userDto.Phone;
+
         }
-        public void DeleteUser(int id) 
+
+        public void DeleteUser(int id)
         {
             var userToDelete = _users.FirstOrDefault(u => u.Id == id);
-            if (userToDelete != null) 
+
+            if (userToDelete != null)
             {
                 _users.Remove(userToDelete);
             }

@@ -8,21 +8,16 @@ namespace PersonalFinanceApp.Controllers
     [ApiController]
     public class UserController : Controller
     {
-        private readonly IUserRepository _userRepository;
-        public UserController(IUserRepository userRepository)
+        private readonly IUserService _userService;
+        public UserController(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
         
         [HttpGet]
         public IActionResult GetAllUsers()
         {
-            var users = _userRepository.GetAllUsers();
-
-            if (!ModelState.IsValid) 
-            {
-                return BadRequest(ModelState);
-            }
+            var users = _userService.GetAllUsers();
 
             return Ok(users);
         }
@@ -30,80 +25,70 @@ namespace PersonalFinanceApp.Controllers
         [HttpGet("{id}")]
         public IActionResult GetUser(int id)
         {
-            var user = _userRepository.GetUser(id);
+            var user = _userService.GetUser(id);
 
             if (user == null)
             {
                 return NotFound();
-            }
-
-            if (!ModelState.IsValid)
-            { 
-                return BadRequest(ModelState);
             }
 
             return Ok(user);
         }
 
         [HttpPost]
-        public IActionResult CreateUser([FromBody] UserDto userDto)
+        public IActionResult CreateUser([FromBody] CreateUserDto createUserDto)
         {
-            if (userDto == null)
+            if (createUserDto == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (!ModelState.IsValid)
+            try
             {
-                return BadRequest(ModelState);
+                var user = _userService.CreateUser(createUserDto);
+                return CreatedAtAction(nameof(GetUser), new { id = user.Id },  user);
             }
-
-            if (_userRepository.GetAllUsers().Any(u => u.Email == userDto.Email || u.Phone == userDto.Phone))
+            catch (ArgumentException ex)
             {
-                return BadRequest("User with this email or phone already exists.");
+                return BadRequest(ex.Message);
             }
-
-            _userRepository.CreateUser(userDto);
-            return Ok(userDto);
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteUser(int id)
         {
-            var user = _userRepository.GetUser(id);
-
-            if (user == null)
+            try
+            {
+                _userService.DeleteUser(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
             {
                 return NotFound();
-            }
-
-            _userRepository.DeleteUser(id);
-            return NoContent();
+            }            
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateUser(int id, [FromBody] UserDto userDto)
         {
-
-            var user = _userRepository.GetUser(id);
-
-            if (user == null)
-            {  
-                return NotFound();
-            }
-
-            if (!ModelState.IsValid)
+            if (userDto == null || !ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (_userRepository.GetAllUsers().Any(u => u.Email == userDto.Email || u.Phone == userDto.Phone))
+            try
             {
-                return BadRequest("User with this email or phone already exists.");
+                _userService.UpdateUser(id, userDto);
+                return Ok(userDto);
             }
-
-            _userRepository.UpdateUser(id, userDto);
-            return Ok(userDto);
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
