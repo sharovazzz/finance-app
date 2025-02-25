@@ -29,12 +29,17 @@ namespace PersonalFinanceApp.Services
                 throw new ArgumentException("Either email or phone must be provided.");
             }
 
-            
-            var createUserEmail = createUserDto.Email.Trim().ToLowerInvariant();
-            var createUserPhone = PhoneValidation(createUserDto.Phone);
-            var anyUser = _userRepository.GetUsersByEmailOrPhone(createUserEmail, createUserPhone);
+            var createUserEmail = createUserDto.Email?.Trim().ToLowerInvariant();
+            var createUserPhone = createUserDto.Phone;
 
-            if (anyUser != null)
+            if (!string.IsNullOrEmpty(createUserPhone) && !TryParseAsPhone(createUserPhone, out createUserPhone))
+            {
+                throw new ArgumentException("Incorrect phone number.");
+            }
+
+            var anyUsers = _userRepository.GetUsersByEmailOrPhone(createUserEmail, createUserPhone);
+
+            if (anyUsers.Any())
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -54,9 +59,9 @@ namespace PersonalFinanceApp.Services
         public void UpdateUser(int id, UserDto userDto)
         {
             var user = _userRepository.GetUser(id);
-            var updateUserEmail = userDto.Email.Trim().ToLowerInvariant();
-            var updateUserPhone = PhoneValidation(userDto.Phone);
-            var anyUser = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
+            var updateUserEmail = userDto.Email?.Trim().ToLowerInvariant();
+            var updateUserPhone = userDto.Phone;
+            var anyUsers = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
             
             if (user == null)
             {
@@ -68,7 +73,12 @@ namespace PersonalFinanceApp.Services
                 throw new ArgumentException("Either email or phone must be provided.");
             }
 
-            if (anyUser != null && anyUser.Id != id)
+            if (!string.IsNullOrEmpty(updateUserPhone) && !TryParseAsPhone(updateUserPhone, out updateUserPhone))
+            {
+                throw new ArgumentException("Incorrect phone number.");
+            }
+
+            if (anyUsers.Any(u => u.Id != id))
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -88,7 +98,7 @@ namespace PersonalFinanceApp.Services
             _userRepository.DeleteUser(id);
         }
 
-        public void ResettingUserCategories(int id)
+        public void ResetUserCategories(int id)
         {
             var user = _userRepository.GetUser(id);
 
@@ -97,7 +107,7 @@ namespace PersonalFinanceApp.Services
                 throw new KeyNotFoundException("User not found");
             }
 
-            _userRepository.ResettingUserCategories(id);
+            _userRepository.ResetUserCategories(id);
         }
 
         public void DeleteUserCategory(int userId, int categoryId)
@@ -118,7 +128,7 @@ namespace PersonalFinanceApp.Services
             _userRepository.DeleteUserCategory(userId, categoryId);
         }
 
-        public void CreateUserCategory(int userId, CategoryDto categoryDto)
+        public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
             var user = _userRepository.GetUser(userId);
 
@@ -127,20 +137,36 @@ namespace PersonalFinanceApp.Services
                 throw new KeyNotFoundException("User not found");
             }
 
-            _userRepository.CreateUserCategory(userId, categoryDto);
+            _userRepository.CreateUserCategory(userId, createCategoryDto);
         }
 
-        public string PhoneValidation(string phone)
+        public bool TryParseAsPhone(string value, out string phone)
         {
-            var digits = new string(phone.Where(p => char.IsDigit(p)).ToArray());
-            var lenght = digits.Length;
-            
-            if (lenght < 10 || lenght > 11 || (lenght == 11 && !digits.StartsWith("7") && !digits.StartsWith("8")))
+            var digits = new string(value.Where(p => char.IsDigit(p)).ToArray());
+            var length = digits.Length;
+
+            if (length < 10 || length > 11 || (length == 11 && !digits.StartsWith("7") && !digits.StartsWith("8")))
             {
-                throw new ArgumentException("Incorrect phone number");
+                phone = null;
+                return false;
             }
 
-            return _userRepository.PhoneValidation(phone);
+            phone = FormatPhone(digits);
+            return true;
+        }
+
+        public string FormatPhone(string digits)
+        {
+            if (digits.Length == 11 && digits.StartsWith("8"))
+            {
+                digits = digits.Remove(0, 1);
+            }
+
+            if (digits.Length == 10)
+            {
+                digits = "7" + digits;
+            }
+            return digits;
         }
     }   
 }

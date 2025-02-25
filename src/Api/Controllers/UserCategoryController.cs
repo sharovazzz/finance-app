@@ -16,11 +16,11 @@ namespace PersonalFinanceApp.Controllers
         }
 
         [HttpPut("reset")]
-        public IActionResult ResettingUserCategories(int userId)
+        public IActionResult ResetUserCategories(int userId)
         {
             try
             {
-                _userService.ResettingUserCategories(userId);
+                _userService.ResetUserCategories(userId);
                 return Ok();
             }
             catch (KeyNotFoundException)
@@ -44,11 +44,11 @@ namespace PersonalFinanceApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateUserCategory(int userId, CategoryDto categoryDto)
+        public IActionResult CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
             try
             {
-                _userService.CreateUserCategory(userId, categoryDto);
+                _userService.CreateUserCategory(userId, createCategoryDto);
                 return Ok();
             }
             catch (KeyNotFoundException)

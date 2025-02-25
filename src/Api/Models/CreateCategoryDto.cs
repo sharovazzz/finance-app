@@ -1,6 +1,6 @@
 ﻿namespace PersonalFinanceApp.Models
 {
-    public class CategoryDto
+    public class CreateCategoryDto
     {
         public required string Name { get; set; }
     }

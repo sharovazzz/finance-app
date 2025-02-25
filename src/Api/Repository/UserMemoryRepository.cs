@@ -19,9 +19,9 @@ namespace PersonalFinanceApp.Repository
             return _users.FirstOrDefault(u => u.Id == id);
         }
 
-        public User GetUsersByEmailOrPhone(string email, string phone)
+        public List<User> GetUsersByEmailOrPhone(string email, string phone)
         {
-            return _users.FirstOrDefault(u => u.Email == email || u.Phone == phone);
+            return _users.Where(u => u.Email == email || u.Phone == phone).ToList();
         }
 
         public User CreateUser(UserDto userDto)
@@ -32,7 +32,7 @@ namespace PersonalFinanceApp.Repository
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
-                Phone = PhoneValidation(userDto.Phone),
+                Phone = userDto.Phone,
                 Categories = DefaultCategory.GetDefaultCategories()
             };
 
@@ -47,7 +47,7 @@ namespace PersonalFinanceApp.Repository
             userToUpdate.FirstName = userDto.FirstName;
             userToUpdate.LastName = userDto.LastName;
             userToUpdate.Email = userDto.Email.Trim().ToLowerInvariant();
-            userToUpdate.Phone = PhoneValidation(userDto.Phone);
+            userToUpdate.Phone = userDto.Phone;
         }
 
         public void DeleteUser(int id)
@@ -57,7 +57,7 @@ namespace PersonalFinanceApp.Repository
             _users.Remove(userToDelete);
         }
 
-        public void ResettingUserCategories(int id)
+        public void ResetUserCategories(int id)
         {
             var user = _users.FirstOrDefault(u => u.Id == id);
 
@@ -73,33 +73,17 @@ namespace PersonalFinanceApp.Repository
             user.Categories.Remove(category);
         }
 
-        public void CreateUserCategory(int userId, CategoryDto categoryDto)
+        public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
             var user = _users.FirstOrDefault(u => u.Id == userId);
 
             var category = new Category
             {
                 Id = categoryId++,
-                Name = categoryDto.Name
+                Name = createCategoryDto.Name
             };
 
             user.Categories.Add(category);
-        }
-
-        public string PhoneValidation(string phone)
-        {
-            var digits = new string(phone.Where(p => char.IsDigit(p)).ToArray());
-
-            if (digits.Length == 11 && digits.StartsWith("8"))
-            {
-                digits = digits.Remove(0, 1);
-            }
-
-            if (digits.Length == 10)
-            {
-                digits = "7" + digits;
-            }
-            return digits;
         }
     }
 }
