@@ -21,7 +21,10 @@ namespace PersonalFinanceApp.Repository
 
         public List<User> GetUsersByEmailOrPhone(string email, string phone)
         {
-            return _users.Where(u => u.Email == email || u.Phone == phone).ToList();
+            return _users.Where(u => 
+                (!string.IsNullOrEmpty(email) && u.Email == email) || 
+                (!string.IsNullOrEmpty(phone) && u.Phone == phone))
+                .ToList();
         }
 
         public User CreateUser(UserDto userDto)
