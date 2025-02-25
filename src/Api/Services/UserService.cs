@@ -1,5 +1,6 @@
 ﻿using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
+using PersonalFinanceApp.Helpers;
 
 namespace PersonalFinanceApp.Services
 {
@@ -32,14 +33,14 @@ namespace PersonalFinanceApp.Services
             var createUserEmail = createUserDto.Email?.Trim().ToLowerInvariant();
             var createUserPhone = createUserDto.Phone;
 
-            if (!string.IsNullOrEmpty(createUserPhone) && !TryParseAsPhone(createUserPhone, out createUserPhone))
+            if (!string.IsNullOrEmpty(createUserPhone) && !PhoneHelpers.TryParseAsPhone(createUserPhone, out createUserPhone))
             {
                 throw new ArgumentException("Incorrect phone number.");
             }
 
-            var anyUsers = _userRepository.GetUsersByEmailOrPhone(createUserEmail, createUserPhone);
+            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(createUserEmail, createUserPhone);
 
-            if (anyUsers.Any())
+            if (usersWithThisPhoneOrEmail.Any())
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -61,7 +62,7 @@ namespace PersonalFinanceApp.Services
             var user = _userRepository.GetUser(id);
             var updateUserEmail = userDto.Email?.Trim().ToLowerInvariant();
             var updateUserPhone = userDto.Phone;
-            var anyUsers = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
+            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
             
             if (user == null)
             {
@@ -73,12 +74,12 @@ namespace PersonalFinanceApp.Services
                 throw new ArgumentException("Either email or phone must be provided.");
             }
 
-            if (!string.IsNullOrEmpty(updateUserPhone) && !TryParseAsPhone(updateUserPhone, out updateUserPhone))
+            if (!string.IsNullOrEmpty(updateUserPhone) && !PhoneHelpers.TryParseAsPhone(updateUserPhone, out updateUserPhone))
             {
                 throw new ArgumentException("Incorrect phone number.");
             }
 
-            if (anyUsers.Any(u => u.Id != id))
+            if (usersWithThisPhoneOrEmail.Any(u => u.Id != id))
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -138,35 +139,6 @@ namespace PersonalFinanceApp.Services
             }
 
             _userRepository.CreateUserCategory(userId, createCategoryDto);
-        }
-
-        public bool TryParseAsPhone(string value, out string phone)
-        {
-            var digits = new string(value.Where(p => char.IsDigit(p)).ToArray());
-            var length = digits.Length;
-
-            if (length < 10 || length > 11 || (length == 11 && !digits.StartsWith("7") && !digits.StartsWith("8")))
-            {
-                phone = null;
-                return false;
-            }
-
-            phone = FormatPhone(digits);
-            return true;
-        }
-
-        public string FormatPhone(string digits)
-        {
-            if (digits.Length == 11 && digits.StartsWith("8"))
-            {
-                digits = digits.Remove(0, 1);
-            }
-
-            if (digits.Length == 10)
-            {
-                digits = "7" + digits;
-            }
-            return digits;
         }
     }   
 }
