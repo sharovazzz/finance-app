@@ -1,27 +1,32 @@
-﻿using PersonalFinanceApp.Interfaces;
+﻿using Microsoft.EntityFrameworkCore;
+using PersonalFinanceApp.Data;
+using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
 
 namespace PersonalFinanceApp.Repository
 {
     public class UserMemoryRepository : IUserRepository
     {
-        private readonly List<User> _users = new List<User>();
-        private int userId = 1;
-        private int categoryId = 5;
+        private readonly ApplicationContext _context;
+
+        public UserMemoryRepository(ApplicationContext context)
+        {
+            _context = context;
+        }
 
         public List<User> GetAllUsers()
         {
-            return _users;
+            return _context.Users.Include(u => u.Categories).ToList();
         }
 
         public User GetUser(int id)
         {
-            return _users.FirstOrDefault(u => u.Id == id);
+            return _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
         }
 
         public List<User> GetUsersByEmailOrPhone(string email, string phone)
         {
-            return _users.Where(u => 
+            return _context.Users.Include(u => u.Categories).Where(u => 
                 (!string.IsNullOrEmpty(email) && u.Email == email) || 
                 (!string.IsNullOrEmpty(phone) && u.Phone == phone))
                 .ToList();
@@ -31,7 +36,6 @@ namespace PersonalFinanceApp.Repository
         {
             var user = new User
             {
-                Id = userId++,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
@@ -39,54 +43,60 @@ namespace PersonalFinanceApp.Repository
                 Categories = DefaultCategory.GetDefaultCategories()
             };
 
-            _users.Add(user);
+            _context.Users.Add(user);
+            _context.SaveChanges();
             return user;
         }
 
         public void UpdateUser(int id, UserDto userDto)
         {
-            var userToUpdate = _users.FirstOrDefault(u => u.Id == id);
+            var userToUpdate = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
 
             userToUpdate.FirstName = userDto.FirstName;
             userToUpdate.LastName = userDto.LastName;
             userToUpdate.Email = userDto.Email.Trim().ToLowerInvariant();
             userToUpdate.Phone = userDto.Phone;
+
+            _context.SaveChanges();
         }
 
         public void DeleteUser(int id)
         {
-            var userToDelete = _users.FirstOrDefault(u => u.Id == id);
+            var userToDelete = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
 
-            _users.Remove(userToDelete);
+            _context.Users.Remove(userToDelete);
+            _context.SaveChanges(); 
         }
 
         public void ResetUserCategories(int id)
         {
-            var user = _users.FirstOrDefault(u => u.Id == id);
+            var user = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
 
             user.Categories = DefaultCategory.GetDefaultCategories();
+            _context.SaveChanges();
         }
 
         public void DeleteUserCategory(int userId, int categoryId)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
+            var user = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == userId);
             
             var category = user.Categories.FirstOrDefault(c => c.Id == categoryId);
 
             user.Categories.Remove(category);
+            _context.SaveChanges(); 
         }
 
         public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
-            var user = _users.FirstOrDefault(u => u.Id == userId);
+            var user = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == userId);
 
             var category = new Category
             {
-                Id = categoryId++,
                 Name = createCategoryDto.Name
             };
 
             user.Categories.Add(category);
+            _context.SaveChanges();
         }
     }
 }
