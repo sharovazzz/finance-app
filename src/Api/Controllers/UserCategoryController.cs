@@ -48,8 +48,8 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                _userService.CreateUserCategory(userId, createCategoryDto);
-                return Ok();
+                var category = _userService.CreateUserCategory(userId, createCategoryDto);
+                return Ok(category);
             }
             catch (KeyNotFoundException)
             {

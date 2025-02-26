@@ -12,6 +12,6 @@ namespace PersonalFinanceApp.Interfaces
         void DeleteUser(int id);
         void ResetUserCategories(int id);
         void DeleteUserCategory(int userId, int categoryId);
-        void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto);
+        Category CreateUserCategory(int userId, CreateCategoryDto createCategoryDto);
     }
 }

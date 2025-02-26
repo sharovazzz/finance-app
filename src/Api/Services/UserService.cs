@@ -129,7 +129,7 @@ namespace PersonalFinanceApp.Services
             _userRepository.DeleteUserCategory(userId, categoryId);
         }
 
-        public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
+        public Category CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
             var user = _userRepository.GetUser(userId);
 
@@ -138,7 +138,7 @@ namespace PersonalFinanceApp.Services
                 throw new KeyNotFoundException("User not found");
             }
 
-            _userRepository.CreateUserCategory(userId, createCategoryDto);
+            return _userRepository.CreateUserCategory(userId, createCategoryDto);
         }
     }   
 }

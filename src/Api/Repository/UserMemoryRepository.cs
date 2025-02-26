@@ -76,7 +76,7 @@ namespace PersonalFinanceApp.Repository
             user.Categories.Remove(category);
         }
 
-        public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
+        public Category CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
         {
             var user = _users.FirstOrDefault(u => u.Id == userId);
 
@@ -87,6 +87,7 @@ namespace PersonalFinanceApp.Repository
             };
 
             user.Categories.Add(category);
+            return category;
         }
     }
 }
