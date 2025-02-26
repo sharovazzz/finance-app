@@ -1,5 +1,6 @@
 ﻿using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
+using PersonalFinanceApp.Helpers;
 
 namespace PersonalFinanceApp.Services
 {
@@ -29,7 +30,17 @@ namespace PersonalFinanceApp.Services
                 throw new ArgumentException("Either email or phone must be provided.");
             }
 
-            if (_userRepository.GetAllUsers().Any(u => u.Email == createUserDto.Email || u.Phone == createUserDto.Phone))
+            var createUserEmail = createUserDto.Email?.Trim().ToLowerInvariant();
+            var createUserPhone = createUserDto.Phone;
+
+            if (!string.IsNullOrEmpty(createUserPhone) && !PhoneHelpers.TryParseAsPhone(createUserPhone, out createUserPhone))
+            {
+                throw new ArgumentException("Incorrect phone number.");
+            }
+
+            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(createUserEmail, createUserPhone);
+
+            if (usersWithThisPhoneOrEmail.Any())
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -38,8 +49,8 @@ namespace PersonalFinanceApp.Services
             {
                 FirstName = createUserDto.FirstName ?? string.Empty,
                 LastName = createUserDto.LastName ?? string.Empty,
-                Email = createUserDto.Email ?? string.Empty,
-                Phone = createUserDto.Phone ?? string.Empty
+                Email = createUserEmail ?? string.Empty,
+                Phone = createUserPhone ?? string.Empty
             };
 
             return _userRepository.CreateUser(userDto);
@@ -49,7 +60,10 @@ namespace PersonalFinanceApp.Services
         public void UpdateUser(int id, UserDto userDto)
         {
             var user = _userRepository.GetUser(id);
-
+            var updateUserEmail = userDto.Email?.Trim().ToLowerInvariant();
+            var updateUserPhone = userDto.Phone;
+            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
+            
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
@@ -60,7 +74,12 @@ namespace PersonalFinanceApp.Services
                 throw new ArgumentException("Either email or phone must be provided.");
             }
 
-            if (_userRepository.GetAllUsers().Any(u => u.Id != id && (u.Email == userDto.Email || u.Phone == userDto.Phone)))
+            if (!string.IsNullOrEmpty(updateUserPhone) && !PhoneHelpers.TryParseAsPhone(updateUserPhone, out updateUserPhone))
+            {
+                throw new ArgumentException("Incorrect phone number.");
+            }
+
+            if (usersWithThisPhoneOrEmail.Any(u => u.Id != id))
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
@@ -78,6 +97,48 @@ namespace PersonalFinanceApp.Services
             }
 
             _userRepository.DeleteUser(id);
+        }
+
+        public void ResetUserCategories(int id)
+        {
+            var user = _userRepository.GetUser(id);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            _userRepository.ResetUserCategories(id);
+        }
+
+        public void DeleteUserCategory(int userId, int categoryId)
+        {
+            var user = _userRepository.GetUser(userId);
+            var category = user.Categories.FirstOrDefault(c => c.Id == categoryId);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            if (category == null)
+            {
+                throw new KeyNotFoundException("Category not found");
+            }
+
+            _userRepository.DeleteUserCategory(userId, categoryId);
+        }
+
+        public void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
+        {
+            var user = _userRepository.GetUser(userId);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            _userRepository.CreateUserCategory(userId, createCategoryDto);
         }
     }   
 }

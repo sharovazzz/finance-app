@@ -9,5 +9,8 @@ namespace PersonalFinanceApp.Interfaces
         User CreateUser(CreateUserDto createUserDto);
         void UpdateUser(int id, UserDto userDto);
         void DeleteUser(int id);
+        void ResetUserCategories(int id);
+        void DeleteUserCategory(int userId, int categoryId);
+        void CreateUserCategory(int userId, CreateCategoryDto createCategoryDto);
     }
 }
