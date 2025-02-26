@@ -6,10 +6,12 @@
         {
             return new List<Category>
             {
+
                 new Category {Name = "Food"},
                 new Category {Name = "Entertainment"},
                 new Category {Name = "Clothes"},
                 new Category {Name = "Transport"}
+
             };
         }
     }
