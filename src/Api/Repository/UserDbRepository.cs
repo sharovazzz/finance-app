@@ -79,10 +79,9 @@ namespace PersonalFinanceApp.Repository
 
         public void DeleteUserCategory(int userId, int categoryId)
         {
-            var user = _context.Users.FirstOrDefault(u => u.Id == userId);
             var category = _context.Categories.FirstOrDefault(c => c.Id == categoryId);
-            
-            user.Categories.Remove(category);
+
+            _context.Categories.Remove(category);
             _context.SaveChanges();
         }
 
