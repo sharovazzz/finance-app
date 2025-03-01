@@ -60,30 +60,33 @@ namespace PersonalFinanceApp.Services
         public void UpdateUser(int id, UserDto userDto)
         {
             var user = _userRepository.GetUser(id);
-            var updateUserEmail = userDto.Email?.Trim().ToLowerInvariant();
-            var updateUserPhone = userDto.Phone;
-            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
             
             if (user == null)
             {
                 throw new KeyNotFoundException("User not found");
             }
-
+            
             if (string.IsNullOrEmpty(userDto.Email) && string.IsNullOrEmpty(userDto.Phone))
             {
                 throw new ArgumentException("Either email or phone must be provided.");
             }
+
+            var updateUserEmail = userDto.Email?.Trim().ToLowerInvariant();
+            var updateUserPhone = userDto.Phone;
 
             if (!string.IsNullOrEmpty(updateUserPhone) && !PhoneHelpers.TryParseAsPhone(updateUserPhone, out updateUserPhone))
             {
                 throw new ArgumentException("Incorrect phone number.");
             }
 
+            var usersWithThisPhoneOrEmail = _userRepository.GetUsersByEmailOrPhone(updateUserEmail, updateUserPhone);
+            
             if (usersWithThisPhoneOrEmail.Any(u => u.Id != id))
             {
                 throw new ArgumentException("User with this email or phone already exists.");
             }
 
+            userDto.Phone = updateUserPhone;
             _userRepository.UpdateUser(id, userDto);
         }
 
