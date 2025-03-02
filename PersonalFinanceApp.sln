@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35506.116 d17.12
+VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalFinanceApp", "src\Api\PersonalFinanceApp.csproj", "{CA73A2DC-ED51-4F7F-B663-6C7EC97DF925}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PersonalFinanceApp.Tests", "PersonalFinanceApp.Tests\PersonalFinanceApp.Tests.csproj", "{B86CABD5-4ECE-40EA-AAD8-05BEB7068B92}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{CA73A2DC-ED51-4F7F-B663-6C7EC97DF925}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA73A2DC-ED51-4F7F-B663-6C7EC97DF925}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA73A2DC-ED51-4F7F-B663-6C7EC97DF925}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B86CABD5-4ECE-40EA-AAD8-05BEB7068B92}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B86CABD5-4ECE-40EA-AAD8-05BEB7068B92}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B86CABD5-4ECE-40EA-AAD8-05BEB7068B92}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B86CABD5-4ECE-40EA-AAD8-05BEB7068B92}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
