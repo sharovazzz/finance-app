@@ -3,7 +3,7 @@ using PersonalFinanceApp.Models;
 using PersonalFinanceApp.Repository;
 using PersonalFinanceApp.Services;
 
-namespace PersonalFinanceApp.Tests
+namespace PersonalFinanceApp.Tests.Service
 {
     public class UserServiceTests
     {
@@ -65,8 +65,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.CreateUser(createUserDto);
 
-            ArgumentException exeption = Assert.Throws<ArgumentException>(act);
-            Assert.Equal("User with this email or phone already exists.", exeption.Message);
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+            Assert.Equal("User with this email or phone already exists.", exception.Message);
         }
 
         [Fact]
@@ -83,8 +83,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.CreateUser(createUserDto);
 
-            ArgumentException exeption = Assert.Throws<ArgumentException>(act);
-            Assert.Equal("User with this email or phone already exists.", exeption.Message);
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+            Assert.Equal("User with this email or phone already exists.", exception.Message);
         }
 
         [Fact]
@@ -148,8 +148,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.UpdateUser(2, updateUserDto);
 
-            KeyNotFoundException exeption = Assert.Throws<KeyNotFoundException>(act);
-            Assert.Equal("User not found", exeption.Message);
+            KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(act);
+            Assert.Equal("User not found", exception.Message);
         }
 
         [Fact]
@@ -163,7 +163,7 @@ namespace PersonalFinanceApp.Tests
                 Phone = "79961110000"
             };
             _userRepository.CreateUser(createUserDto);
-            
+
             var updateUserDto = new UserDto
             {
                 FirstName = "Name",
@@ -174,8 +174,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.UpdateUser(1, updateUserDto);
 
-            ArgumentException exeption = Assert.Throws<ArgumentException>(act);
-            Assert.Equal("Either email or phone must be provided.", exeption.Message);
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+            Assert.Equal("Either email or phone must be provided.", exception.Message);
         }
 
         [Fact]
@@ -200,8 +200,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.UpdateUser(1, updateUserDto);
 
-            ArgumentException exeption = Assert.Throws<ArgumentException>(act);
-            Assert.Equal("Incorrect phone number.", exeption.Message);
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+            Assert.Equal("Incorrect phone number.", exception.Message);
         }
 
         [Fact]
@@ -235,8 +235,8 @@ namespace PersonalFinanceApp.Tests
 
             Action act = () => _userService.UpdateUser(2, updateUserDto);
 
-            ArgumentException exeption = Assert.Throws<ArgumentException>(act);
-            Assert.Equal("User with this email or phone already exists.", exeption.Message);
+            ArgumentException exception = Assert.Throws<ArgumentException>(act);
+            Assert.Equal("User with this email or phone already exists.", exception.Message);
         }
 
         [Fact]
