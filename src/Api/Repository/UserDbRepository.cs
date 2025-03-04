@@ -2,6 +2,8 @@
 using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Net;
 
 namespace PersonalFinanceApp.Repository
 {
@@ -16,14 +18,20 @@ namespace PersonalFinanceApp.Repository
 
         public List<User> GetAllUsers()
         {
-            return _context.Users.Include(u => u.Categories).ToList();
+            return _context.Users
+                .Include(u => u.Categories)
+                .Include(u => u.Expenses)
+                .ToList();
         }
 
         public User GetUser(int id)
         {
-            return _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
+            return _context.Users
+                .Include(u => u.Categories)
+                .Include(u => u.Expenses)
+                .FirstOrDefault(u => u.Id == id);
         }
-
+        
         public List<User> GetUsersByEmailOrPhone(string email, string phone)
         {
             return _context.Users
@@ -40,7 +48,8 @@ namespace PersonalFinanceApp.Repository
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
                 Phone = userDto.Phone,
-                Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList()
+                Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList(),
+                Expenses = []
             };
 
             _context.Users.Add(user);
@@ -98,6 +107,65 @@ namespace PersonalFinanceApp.Repository
             _context.SaveChanges();
 
             return category;
+        }
+
+        public Expense CreateUserExpense(int userId, int categoryId, CreateExpenseDto createExpenseDto)
+        {
+            var user = _context.Users.Include(u => u.Expenses).FirstOrDefault(u => u.Id == userId);
+
+            var expense = new Expense 
+            {
+                Amount = createExpenseDto.Amount,
+                CategoryId = categoryId,
+                Date = createExpenseDto.Date,
+                Address = createExpenseDto.Address,
+                Description = createExpenseDto.Description
+            };
+
+            user.Expenses.Add(expense);
+            _context.SaveChanges();
+
+            return expense;
+        }
+
+        public void DeleteUserExpense(int userId, int expenseId)
+        {
+            var expense = _context.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            _context.Expenses.Remove(expense);
+            _context.SaveChanges();
+        }
+
+        public List<Expense> GetUserExpenses(int userId)
+        {
+            var user = _context.Users
+                .Include(e => e.Expenses)
+                .FirstOrDefault(u => u.Id == userId);
+
+            return user.Expenses;
+        }
+
+        public Expense ChangeExpenseCategory(int userId, int expenseId, int newCategoryId)
+        {
+            var expense = _context.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            expense.CategoryId = newCategoryId;
+
+            _context.SaveChanges();
+            return expense;
+        }
+
+        public Expense UpdateUserExpense(int userId, int expenseId, CreateExpenseDto createExpenseDto)
+        {
+            var expense = _context.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            expense.Amount = createExpenseDto.Amount;
+            expense.Date = createExpenseDto.Date;
+            expense.Address = createExpenseDto.Address;
+            expense.Description = createExpenseDto.Description;
+
+            _context.SaveChanges();
+            return expense;
         }
     }
 }
