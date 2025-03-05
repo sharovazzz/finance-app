@@ -8,11 +8,11 @@ namespace PersonalFinanceApp.Controllers
     [ApiController]
     public class UserExpenseController : Controller
     {
-        private readonly IUserService _userService;
+        private readonly IUserExpenseService _userExpenseService;
 
-        public UserExpenseController(IUserService userService)
+        public UserExpenseController(IUserExpenseService userExpenseService)
         {
-            _userService = userService;
+            _userExpenseService = userExpenseService;
         }
 
         [HttpPost]
@@ -20,7 +20,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                var expense = _userService.CreateUserExpense(userId, categoryId, createExpenseDto);
+                var expense = _userExpenseService.CreateUserExpense(userId, categoryId, createExpenseDto);
                 return Ok(expense);
             }
             catch (KeyNotFoundException)
@@ -38,7 +38,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                _userService.DeleteUserExpense(userId, expenseId);
+                _userExpenseService.DeleteUserExpense(userId, expenseId);
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -52,7 +52,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                var expense = _userService.GetUserExpenses(userId);
+                var expense = _userExpenseService.GetUserExpenses(userId);
                 return Ok(expense);
             }
             catch (KeyNotFoundException)
@@ -66,7 +66,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                var expense = _userService.ChangeExpenseCategory(userId, expenseId, newCategoryId);
+                var expense = _userExpenseService.ChangeExpenseCategory(userId, expenseId, newCategoryId);
                 return Ok(expense);
             }
             catch (KeyNotFoundException)
@@ -80,7 +80,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                var expense = _userService.UpdateUserExpense(userId, expenseId, createExpenseDto);
+                var expense = _userExpenseService.UpdateUserExpense(userId, expenseId, createExpenseDto);
                 return Ok(expense);
             }
             catch (KeyNotFoundException)

@@ -81,7 +81,7 @@ namespace PersonalFinanceApp.Repository
         public void DeleteUserCategory(int userId, int categoryId)
         {
             var user = _users.FirstOrDefault(u => u.Id == userId);
-            
+
             var category = user.Categories.FirstOrDefault(c => c.Id == categoryId);
 
             user.Categories.Remove(category);
@@ -141,7 +141,7 @@ namespace PersonalFinanceApp.Repository
             var expense = user.Expenses.FirstOrDefault(e => e.Id == expenseId);
 
             expense.CategoryId = newCategoryId;
-            
+
             return expense;
         }
 
