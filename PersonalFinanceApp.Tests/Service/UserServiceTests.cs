@@ -17,7 +17,7 @@ namespace PersonalFinanceApp.Tests.Service
         }
 
         [Fact]
-        public void CreateUser_EmptyEmailAndPhone_Exeption()
+        public void CreateUser_EmptyEmailAndPhone_Exсeption()
         {
             var createUserDto = new CreateUserDto
             {
@@ -52,7 +52,7 @@ namespace PersonalFinanceApp.Tests.Service
         }
 
         [Fact]
-        public void CerateUser_UserWithThisPhoneAlredyExists_Exeption()
+        public void CreateUser_UserWithThisPhoneAlreadyExists_Exception()
         {
             var createUserDto = new CreateUserDto
             {
@@ -70,7 +70,7 @@ namespace PersonalFinanceApp.Tests.Service
         }
 
         [Fact]
-        public void CreateUser_UserWithThisEmailAlredyExists_Exeption()
+        public void CreateUser_UserWithThisEmailAlreadyExists_Exception()
         {
             var createUserDto = new CreateUserDto
             {
@@ -136,7 +136,7 @@ namespace PersonalFinanceApp.Tests.Service
         }
 
         [Fact]
-        public void UpdateUser_NotFoundUser_Exeption()
+        public void UpdateUser_NotFoundUser_Exception()
         {
             var updateUserDto = new UserDto
             {
@@ -146,14 +146,14 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = ""
             };
 
-            Action act = () => _userService.UpdateUser(2, updateUserDto);
+            Action act = () => _userService.UpdateUser(1, updateUserDto);
 
             KeyNotFoundException exception = Assert.Throws<KeyNotFoundException>(act);
             Assert.Equal("User not found", exception.Message);
         }
 
         [Fact]
-        public void UpdateUser_EmptyEmailAndPhone_Exeption()
+        public void UpdateUser_EmptyEmailAndPhone_Exception()
         {
             var createUserDto = new UserDto
             {
@@ -162,7 +162,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "na@gmail.com",
                 Phone = "79961110000"
             };
-            _userRepository.CreateUser(createUserDto);
+            var newUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -171,15 +171,15 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "",
                 Phone = ""
             };
-
-            Action act = () => _userService.UpdateUser(1, updateUserDto);
+            
+            Action act = () => _userService.UpdateUser(newUser.Id, updateUserDto);
 
             ArgumentException exception = Assert.Throws<ArgumentException>(act);
             Assert.Equal("Either email or phone must be provided.", exception.Message);
         }
 
         [Fact]
-        public void UpdateUser_IncorrectPhone_Exeption()
+        public void UpdateUser_IncorrectPhone_Exception()
         {
             var createUserDto = new UserDto
             {
@@ -188,7 +188,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "",
                 Phone = "79961110000"
             };
-            _userRepository.CreateUser(createUserDto);
+            var newUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -198,14 +198,14 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = "123"
             };
 
-            Action act = () => _userService.UpdateUser(1, updateUserDto);
+            Action act = () => _userService.UpdateUser(newUser.Id, updateUserDto);
 
             ArgumentException exception = Assert.Throws<ArgumentException>(act);
             Assert.Equal("Incorrect phone number.", exception.Message);
         }
 
         [Fact]
-        public void UpdateUser_UserWithThisPhoneAlredyExists_Exeption()
+        public void UpdateUser_UserWithThisPhoneAlredyExists_Exception()
         {
             var createAnyUserDto = new UserDto
             {
@@ -223,7 +223,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "na@gmail.com",
                 Phone = ""
             };
-            _userRepository.CreateUser(createUserDto);
+            var secondUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -233,7 +233,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = "79961110000"
             };
 
-            Action act = () => _userService.UpdateUser(2, updateUserDto);
+            Action act = () => _userService.UpdateUser(secondUser.Id, updateUserDto);
 
             ArgumentException exception = Assert.Throws<ArgumentException>(act);
             Assert.Equal("User with this email or phone already exists.", exception.Message);
@@ -249,7 +249,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "na@gmail.com",
                 Phone = ""
             };
-            _userRepository.CreateUser(createUserDto);
+            var newUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -259,7 +259,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = "89961110000"
             };
 
-            _userService.UpdateUser(1, updateUserDto);
+            _userService.UpdateUser(newUser.Id, updateUserDto);
             var updatedUser = _userRepository.GetUser(1);
 
             Assert.NotNull(updatedUser);
@@ -275,7 +275,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "na@gmail.com",
                 Phone = ""
             };
-            _userRepository.CreateUser(createUserDto);
+            var newUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -285,7 +285,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = "89961110000"
             };
 
-            _userService.UpdateUser(1, updateUserDto);
+            _userService.UpdateUser(newUser.Id, updateUserDto);
             var updatedUser = _userRepository.GetUser(1);
 
             Assert.Equal("79961110000", updatedUser.Phone);
@@ -301,7 +301,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Email = "",
                 Phone = "79961110000"
             };
-            _userRepository.CreateUser(createUserDto);
+            var newUser = _userRepository.CreateUser(createUserDto);
 
             var updateUserDto = new UserDto
             {
@@ -311,7 +311,7 @@ namespace PersonalFinanceApp.Tests.Service
                 Phone = "79961110000"
             };
 
-            _userService.UpdateUser(1, updateUserDto);
+            _userService.UpdateUser(newUser.Id, updateUserDto);
             var updatedUser = _userRepository.GetUser(1);
 
             Assert.Equal("na@gmail.com", updatedUser.Email);
