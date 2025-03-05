@@ -2,7 +2,6 @@
 using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Net;
 
 namespace PersonalFinanceApp.Repository
@@ -16,11 +15,17 @@ namespace PersonalFinanceApp.Repository
             _context = context;
         }
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
             return _context.Users
-                .Include(u => u.Categories)
-                .Include(u => u.Expenses)
+                .Select(u => new ShortUser
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Phone = u.Phone
+                })
                 .ToList();
         }
 
@@ -118,7 +123,6 @@ namespace PersonalFinanceApp.Repository
                 Amount = createExpenseDto.Amount,
                 CategoryId = categoryId,
                 Date = createExpenseDto.Date,
-                Address = createExpenseDto.Address,
                 Description = createExpenseDto.Description
             };
 
@@ -161,7 +165,6 @@ namespace PersonalFinanceApp.Repository
 
             expense.Amount = createExpenseDto.Amount;
             expense.Date = createExpenseDto.Date;
-            expense.Address = createExpenseDto.Address;
             expense.Description = createExpenseDto.Description;
 
             _context.SaveChanges();

@@ -4,7 +4,7 @@ namespace PersonalFinanceApp.Interfaces
 {
     public interface IUserRepository
     {
-        List<User> GetAllUsers();
+        List<ShortUser> GetAllUsers();
         User GetUser(int id);
         List<User> GetUsersByEmailOrPhone(string email, string phone);
         User CreateUser(UserDto userDto);

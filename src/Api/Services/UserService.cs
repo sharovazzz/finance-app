@@ -14,7 +14,7 @@ namespace PersonalFinanceApp.Services
             _userRepository = userRepository;
         }
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
             return _userRepository.GetAllUsers();
         }

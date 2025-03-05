@@ -7,13 +7,21 @@ namespace PersonalFinanceApp.Repository
     public class UserMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();
-        private int userId = 1;
-        private int categoryId = 5;
-        private int expenseId = 1;
+        private int _userId = 1;
+        private int _categoryId = 5;
+        private int _expenseId = 1;
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
-            return _users;
+            return _users
+                .Select(u => new ShortUser
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Phone = u.Phone
+                })
+                .ToList();
         }
 
         public User GetUser(int id)
@@ -33,7 +41,7 @@ namespace PersonalFinanceApp.Repository
         {
             var user = new User
             {
-                Id = userId++,
+                Id = _userId++,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
@@ -85,7 +93,7 @@ namespace PersonalFinanceApp.Repository
 
             var category = new Category
             {
-                Id = categoryId++,
+                Id = _categoryId++,
                 Name = createCategoryDto.Name
             };
 
@@ -99,11 +107,10 @@ namespace PersonalFinanceApp.Repository
 
             var expense = new Expense
             {
-                Id = expenseId++,
+                Id = _expenseId++,
                 Amount = createExpenseDto.Amount,
                 CategoryId = categoryId,
                 Date = createExpenseDto.Date,
-                Address = createExpenseDto.Address,
                 Description = createExpenseDto.Description
             };
 
@@ -146,7 +153,6 @@ namespace PersonalFinanceApp.Repository
 
             expense.Amount = createExpenseDto.Amount;
             expense.Date = createExpenseDto.Date;
-            expense.Address = createExpenseDto.Address;
             expense.Description = createExpenseDto.Description;
 
             return expense;

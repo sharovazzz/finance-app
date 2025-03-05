@@ -4,7 +4,7 @@ namespace PersonalFinanceApp.Interfaces
 {
     public interface IUserService
     {
-        List<User> GetAllUsers();
+        List<ShortUser> GetAllUsers();
         User GetUser(int id);
         User CreateUser(CreateUserDto createUserDto);
         void UpdateUser(int id, UserDto userDto);
