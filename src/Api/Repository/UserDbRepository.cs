@@ -2,6 +2,7 @@
 using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
+using System.Net;
 
 namespace PersonalFinanceApp.Repository
 {
@@ -14,16 +15,28 @@ namespace PersonalFinanceApp.Repository
             _context = context;
         }
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
-            return _context.Users.Include(u => u.Categories).ToList();
+            return _context.Users
+                .Select(u => new ShortUser
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Phone = u.Phone
+                })
+                .ToList();
         }
 
         public User GetUser(int id)
         {
-            return _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
+            return _context.Users
+                .Include(u => u.Categories)
+                .Include(u => u.Expenses)
+                .FirstOrDefault(u => u.Id == id);
         }
-
+        
         public List<User> GetUsersByEmailOrPhone(string email, string phone)
         {
             return _context.Users
@@ -40,7 +53,8 @@ namespace PersonalFinanceApp.Repository
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
                 Phone = userDto.Phone,
-                Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList()
+                Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList(),
+                Expenses = []
             };
 
             _context.Users.Add(user);
@@ -67,37 +81,6 @@ namespace PersonalFinanceApp.Repository
             _context.Users.Remove(userToDelete);
             _context.SaveChanges();
             
-        }
-
-        public void ResetUserCategories(int id)
-        {
-            var user = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == id);
-            
-            user.Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList();
-            _context.SaveChanges();
-        }
-
-        public void DeleteUserCategory(int userId, int categoryId)
-        {
-            var category = _context.Categories.FirstOrDefault(c => c.Id == categoryId);
-
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
-        }
-
-        public Category CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
-        {
-            var user = _context.Users.Include(u => u.Categories).FirstOrDefault(u => u.Id == userId);
-
-            var category = new Category
-            {
-                Name = createCategoryDto.Name
-            };
-
-            user.Categories.Add(category);
-            _context.SaveChanges();
-
-            return category;
         }
     }
 }

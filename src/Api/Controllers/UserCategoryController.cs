@@ -9,10 +9,10 @@ namespace PersonalFinanceApp.Controllers
     [ApiController]
     public class UserCategoryController : Controller
     {
-        private readonly IUserService _userService;
-        public UserCategoryController(IUserService userService)
+        private readonly IUserCategoryService _userCategoryService;
+        public UserCategoryController(IUserCategoryService userCategoryService)
         {
-            _userService = userService;
+            _userCategoryService = userCategoryService;
         }
 
         [HttpPut("reset")]
@@ -20,7 +20,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                _userService.ResetUserCategories(userId);
+                _userCategoryService.ResetUserCategories(userId);
                 return Ok();
             }
             catch (KeyNotFoundException)
@@ -34,7 +34,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                _userService.DeleteUserCategory(userId, categoryId);
+                _userCategoryService.DeleteUserCategory(userId, categoryId);
                 return NoContent();
             }
             catch (KeyNotFoundException)
@@ -48,7 +48,7 @@ namespace PersonalFinanceApp.Controllers
         {
             try
             {
-                var category = _userService.CreateUserCategory(userId, createCategoryDto);
+                var category = _userCategoryService.CreateUserCategory(userId, createCategoryDto);
                 return Ok(category);
             }
             catch (KeyNotFoundException)

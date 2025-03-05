@@ -15,6 +15,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IUserRepository, UserDbRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddScoped<IUserCategoryRepository, UserCategoryDbRepository>();
+builder.Services.AddScoped<IUserCategoryService, UserCategoryService>();
+
+builder.Services.AddScoped<IUserExpenseRepository, UserExpenseDbRepository>();
+builder.Services.AddScoped<IUserExpenseService, UserExpenseService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();

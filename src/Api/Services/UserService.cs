@@ -1,6 +1,7 @@
 ﻿using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
 using PersonalFinanceApp.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace PersonalFinanceApp.Services
 {
@@ -13,7 +14,7 @@ namespace PersonalFinanceApp.Services
             _userRepository = userRepository;
         }
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
             return _userRepository.GetAllUsers();
         }
@@ -100,48 +101,6 @@ namespace PersonalFinanceApp.Services
             }
 
             _userRepository.DeleteUser(id);
-        }
-
-        public void ResetUserCategories(int id)
-        {
-            var user = _userRepository.GetUser(id);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
-            _userRepository.ResetUserCategories(id);
-        }
-
-        public void DeleteUserCategory(int userId, int categoryId)
-        {
-            var user = _userRepository.GetUser(userId);
-            var category = user.Categories.FirstOrDefault(c => c.Id == categoryId);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
-            if (category == null)
-            {
-                throw new KeyNotFoundException("Category not found");
-            }
-
-            _userRepository.DeleteUserCategory(userId, categoryId);
-        }
-
-        public Category CreateUserCategory(int userId, CreateCategoryDto createCategoryDto)
-        {
-            var user = _userRepository.GetUser(userId);
-
-            if (user == null)
-            {
-                throw new KeyNotFoundException("User not found");
-            }
-
-            return _userRepository.CreateUserCategory(userId, createCategoryDto);
         }
     }   
 }
