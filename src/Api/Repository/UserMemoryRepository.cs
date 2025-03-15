@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using PersonalFinanceApp.Interfaces;
+﻿using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
 
 namespace PersonalFinanceApp.Repository
@@ -7,9 +6,9 @@ namespace PersonalFinanceApp.Repository
     public class UserMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();
-        private int _userId = 1;
-        private int _categoryId = 5;
-        private int _expenseId = 1;
+        private int _lastUserId = 1;
+        private int _lastCategoryId = 5;
+        private int _lastExpenseId = 1;
 
         public List<ShortUser> GetAllUsers()
         {
@@ -41,7 +40,7 @@ namespace PersonalFinanceApp.Repository
         {
             var user = new User
             {
-                Id = _userId++,
+                Id = _lastUserId++,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
@@ -93,7 +92,7 @@ namespace PersonalFinanceApp.Repository
 
             var category = new Category
             {
-                Id = _categoryId++,
+                Id = _lastCategoryId++,
                 Name = createCategoryDto.Name
             };
 
@@ -107,7 +106,7 @@ namespace PersonalFinanceApp.Repository
 
             var expense = new Expense
             {
-                Id = _expenseId++,
+                Id = _lastExpenseId++,
                 Amount = createExpenseDto.Amount,
                 CategoryId = categoryId,
                 Date = createExpenseDto.Date,

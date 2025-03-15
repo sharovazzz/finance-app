@@ -2,7 +2,6 @@
 using PersonalFinanceApp.Data;
 using PersonalFinanceApp.Interfaces;
 using PersonalFinanceApp.Models;
-using System.Net;
 
 namespace PersonalFinanceApp.Repository
 {
