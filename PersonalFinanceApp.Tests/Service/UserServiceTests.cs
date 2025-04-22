@@ -35,7 +35,7 @@ namespace PersonalFinanceApp.Tests.Service
         }
 
         [Fact]
-        public void CreateUser_IncorrectPhone_Exeption()
+        public void CreateUser_IncorrectPhone_Exсeption()
         {
             var createUserDto = new CreateUserDto
             {

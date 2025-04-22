@@ -6,12 +6,21 @@ namespace PersonalFinanceApp.Repository
     public class UserMemoryRepository : IUserRepository
     {
         private readonly List<User> _users = new List<User>();
-        private int userId = 1;
-        private int categoryId = 5;
+        private int _lastUserId = 1;
+        private int _lastCategoryId = 5;
+        private int _lastExpenseId = 1;
 
-        public List<User> GetAllUsers()
+        public List<ShortUser> GetAllUsers()
         {
-            return _users;
+            return _users
+                .Select(u => new ShortUser
+                {
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email,
+                    Phone = u.Phone
+                })
+                .ToList();
         }
 
         public User GetUser(int id)
@@ -31,12 +40,13 @@ namespace PersonalFinanceApp.Repository
         {
             var user = new User
             {
-                Id = userId++,
+                Id = _lastUserId++,
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email.Trim().ToLowerInvariant(),
                 Phone = userDto.Phone,
-                Categories = DefaultCategory.GetDefaultCategories()
+                Categories = DefaultCategory.GetDefaultCategories(),
+                Expenses = []
             };
 
             _users.Add(user);
@@ -70,7 +80,7 @@ namespace PersonalFinanceApp.Repository
         public void DeleteUserCategory(int userId, int categoryId)
         {
             var user = _users.FirstOrDefault(u => u.Id == userId);
-            
+
             var category = user.Categories.FirstOrDefault(c => c.Id == categoryId);
 
             user.Categories.Remove(category);
@@ -82,12 +92,69 @@ namespace PersonalFinanceApp.Repository
 
             var category = new Category
             {
-                Id = categoryId++,
+                Id = _lastCategoryId++,
                 Name = createCategoryDto.Name
             };
 
             user.Categories.Add(category);
             return category;
+        }
+
+        public Expense CreateUserExpense(int userId, int categoryId, CreateExpenseDto createExpenseDto)
+        {
+            var user = _users.FirstOrDefault(u => u.Id == userId);
+
+            var expense = new Expense
+            {
+                Id = _lastExpenseId++,
+                Amount = createExpenseDto.Amount,
+                CategoryId = categoryId,
+                Date = createExpenseDto.Date,
+                Description = createExpenseDto.Description
+            };
+
+            user.Expenses.Add(expense);
+            return expense;
+        }
+
+        public void DeleteUserExpense(int userId, int expenseId)
+        {
+            var user = _users.FirstOrDefault(u => u.Id == userId);
+
+            var expense = user.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            user.Expenses.Remove(expense);
+        }
+
+        public List<Expense> GetUserExpenses(int userId)
+        {
+            var user = _users.FirstOrDefault(u => u.Id == userId);
+
+            return user.Expenses;
+        }
+
+        public Expense ChangeExpenseCategory(int userId, int expenseId, int newCategoryId)
+        {
+            var user = _users.FirstOrDefault(e => e.Id == userId);
+
+            var expense = user.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            expense.CategoryId = newCategoryId;
+
+            return expense;
+        }
+
+        public Expense UpdateUserExpense(int userId, int expenseId, CreateExpenseDto createExpenseDto)
+        {
+            var user = _users.FirstOrDefault(u => u.Id == userId);
+
+            var expense = user.Expenses.FirstOrDefault(e => e.Id == expenseId);
+
+            expense.Amount = createExpenseDto.Amount;
+            expense.Date = createExpenseDto.Date;
+            expense.Description = createExpenseDto.Description;
+
+            return expense;
         }
     }
 }
