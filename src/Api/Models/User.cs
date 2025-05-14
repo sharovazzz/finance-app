@@ -9,5 +9,6 @@
         public required string Phone { get; set; }
         public required List<Category> Categories { get; set; } = new List<Category>();
         public required List<Expense> Expenses { get; set; } = new List<Expense> { };
+        public required List<Budget> Budgets { get; set; } = new List<Budget> { };
     }
 }

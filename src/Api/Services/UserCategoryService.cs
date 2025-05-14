@@ -7,11 +7,14 @@ namespace PersonalFinanceApp.Services
     {
         private readonly IUserCategoryRepository _userCategoryRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUserBudgetRepository _userBudgetRepository;
 
-        public UserCategoryService(IUserCategoryRepository userCategoryRepository, IUserRepository userRepository)
+
+        public UserCategoryService(IUserCategoryRepository userCategoryRepository, IUserRepository userRepository, IUserBudgetRepository userBudgetRepository)
         {
             _userCategoryRepository = userCategoryRepository;
             _userRepository = userRepository;
+            _userBudgetRepository = userBudgetRepository;
         }
         public void ResetUserCategories(int id)
         {
@@ -23,6 +26,17 @@ namespace PersonalFinanceApp.Services
             }
 
             _userCategoryRepository.ResetUserCategories(id);
+        }
+        public void ResetBudgetCategories(int userId)
+        {
+            var user = _userRepository.GetUser(userId);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            _userCategoryRepository.ResetUserCategories(userId);
         }
 
         public void DeleteUserCategory(int userId, int categoryId)
@@ -53,6 +67,26 @@ namespace PersonalFinanceApp.Services
             }
 
             return _userCategoryRepository.CreateUserCategory(userId, createCategoryDto);
+        }
+
+        public void UpdateCategoryBudget(int userId, int categoryId, CreateCategoryBudgetDto createCategoryBudgetDto)
+        {
+            var user = _userRepository.GetUser(userId);
+
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+
+            var totalBudget = _userBudgetRepository.GetNowBudget(userId);
+            var currentCategoryBudgets = user.Categories.Sum(c => c.BudgetAmount);
+
+            if (currentCategoryBudgets + createCategoryBudgetDto.BudgetAmount >= totalBudget.Amount)
+            {
+                throw new ArgumentException("Category budget exceeds total budget.");
+            }
+
+            _userCategoryRepository.UpdateCategoryBudget(userId, categoryId, createCategoryBudgetDto);
         }
     }
 }
