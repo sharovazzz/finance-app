@@ -33,6 +33,7 @@ namespace PersonalFinanceApp.Repository
             return _context.Users
                 .Include(u => u.Categories)
                 .Include(u => u.Expenses)
+                .Include(u => u.Budgets)
                 .FirstOrDefault(u => u.Id == id);
         }
         
@@ -53,7 +54,8 @@ namespace PersonalFinanceApp.Repository
                 Email = userDto.Email.Trim().ToLowerInvariant(),
                 Phone = userDto.Phone,
                 Categories = DefaultCategory.GetDefaultCategories().Select(c => new Category { Name = c.Name }).ToList(),
-                Expenses = []
+                Expenses = [],
+                Budgets = []
             };
 
             _context.Users.Add(user);
