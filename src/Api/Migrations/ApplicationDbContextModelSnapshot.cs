@@ -17,51 +17,14 @@ namespace PersonalFinanceApp.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.2");
 
-            modelBuilder.Entity("PersonalFinanceApp.Models.Budget", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateEnd")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("DateStart")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("RemainsBudget")
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("TotalSpend")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Budgets");
-                });
-
             modelBuilder.Entity("PersonalFinanceApp.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("BudgetAmount")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Spent")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("UserId")
@@ -130,13 +93,6 @@ namespace PersonalFinanceApp.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("PersonalFinanceApp.Models.Budget", b =>
-                {
-                    b.HasOne("PersonalFinanceApp.Models.User", null)
-                        .WithMany("Budgets")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("PersonalFinanceApp.Models.Category", b =>
                 {
                     b.HasOne("PersonalFinanceApp.Models.User", null)
@@ -153,8 +109,6 @@ namespace PersonalFinanceApp.Migrations
 
             modelBuilder.Entity("PersonalFinanceApp.Models.User", b =>
                 {
-                    b.Navigation("Budgets");
-
                     b.Navigation("Categories");
 
                     b.Navigation("Expenses");

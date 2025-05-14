@@ -56,23 +56,5 @@ namespace PersonalFinanceApp.Controllers
                 return NotFound();
             }
         }
-
-        [HttpPut("{categoryId}/budget")]
-        public IActionResult UpdateCategoryBudget(int userId, int categoryId, [FromBody] CreateCategoryBudgetDto createCategoryBudgetDto)
-        {
-            try
-            {
-                _userCategoryService.UpdateCategoryBudget(userId, categoryId, createCategoryBudgetDto);
-                return Ok();
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
     }
 }

@@ -8,14 +8,10 @@ namespace PersonalFinanceApp.Repository
     public class UserExpenseDbRepository : IUserExpenseRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly IUserBudgetRepository _userBudgetRepository;
-        private readonly IUserCategoryRepository _userCategoryRepository;
 
-        public UserExpenseDbRepository(ApplicationDbContext context, IUserBudgetRepository userBudgetRepository, IUserCategoryRepository userCategoryRepository)
+        public UserExpenseDbRepository(ApplicationDbContext context)
         {
             _context = context;
-            _userBudgetRepository = userBudgetRepository;
-            _userCategoryRepository = userCategoryRepository;
         }
 
         public Expense CreateUserExpense(int userId, int categoryId, CreateExpenseDto createExpenseDto)
@@ -33,14 +29,6 @@ namespace PersonalFinanceApp.Repository
             user.Expenses.Add(expense);
             _context.SaveChanges();
 
-            var budget = _userBudgetRepository.GetNowBudget(userId);
-            
-            budget.TotalSpend += createExpenseDto.Amount;
-            budget.RemainsBudget -= createExpenseDto.Amount;
-            _userBudgetRepository.UpdateBudget(budget);
-
-            _userCategoryRepository.UpdateCategorySpent(categoryId, createExpenseDto.Amount);
-
             return expense;
         }
 
@@ -50,14 +38,6 @@ namespace PersonalFinanceApp.Repository
 
             _context.Expenses.Remove(expense);
             _context.SaveChanges();
-
-            var budget = _userBudgetRepository.GetNowBudget(userId);
-            
-            budget.TotalSpend -= expense.Amount;
-            budget.RemainsBudget += expense.Amount;
-            _userBudgetRepository.UpdateBudget(budget);
-
-            _userCategoryRepository.UpdateCategorySpent(expense.CategoryId, -expense.Amount);
         }
 
         public List<Expense> GetUserExpenses(int userId)
