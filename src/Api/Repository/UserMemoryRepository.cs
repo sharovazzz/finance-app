@@ -46,7 +46,8 @@ namespace PersonalFinanceApp.Repository
                 Email = userDto.Email.Trim().ToLowerInvariant(),
                 Phone = userDto.Phone,
                 Categories = DefaultCategory.GetDefaultCategories(),
-                Expenses = []
+                Expenses = [],
+                Budgets = []
             };
 
             _users.Add(user);
